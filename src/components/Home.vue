@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import axios from '@/utils/axios';
+
 export default {
   name: 'HelloWorld',
   data () {
@@ -16,9 +18,7 @@ export default {
     }
   },
   created () {
-    setTimeout(() => {
-      this.$set(this.arrs, 1, 'w3')
-    }, 5000)
+    axios.get('/hostproxy/dianying/cities.json')
   }
 }
 </script>
