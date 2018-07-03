@@ -40,7 +40,6 @@ export default {
       display: block;
       width: 45px;
       height: 45px;
-      vertical-align: middle;
       position: relative;
       &:before {
         content: "";
