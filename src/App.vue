@@ -5,14 +5,17 @@
 </template>
 
 <script>
+import "normalize.css";
+
 export default {
-  name: 'App'
-}
+  name: "App"
+};
 </script>
 
 <style>
+@import "./style/app.scss";
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

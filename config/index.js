@@ -11,10 +11,12 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/maoyan': {
-        target: 'http://127.0.0.1:8080/maoyan',
+      '/api': {
+        target: 'https://wx.maoyan.com',
         changeOrigin: true,
-        
+        pathRewrite: {
+          '^/api': ''   //需要rewrite重写的,
+        }
       }
     },
     // Various Dev Server settings
