@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: "header",
+  name: "dheader",
   props: ["left", "right", "back"],
   data() {
     return {
