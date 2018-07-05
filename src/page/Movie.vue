@@ -9,15 +9,20 @@
         <div class="search"></div>
       </section>
       <section class="movie-body">
-        <section v-show="tabIndex===0">电影列表</section>
+        <section v-show="tabIndex===0">
+          <list-item :key="data.id" v-for="data in movieList" :data="data"></list-item>
+        </section>
         <section v-show="tabIndex===1">即将上映列表</section>
       </section>
     </section>
 </template>
 
 <script>
+import listItem from '@/components/list-item';
+
 export default {
   name: "movie",
+  components: {listItem},
   data() {
     return {
       tabIndex: 0,
@@ -28,7 +33,15 @@ export default {
   methods: {
     selectTab(index) {
       this.tabIndex = index;
+    },
+    async fetchMovieList() {
+      const movieList = await this.$axios.get("/ajax/movieOnInfoList");
+      this.movieList = movieList.movieList;
+      console.log(movieList);
     }
+  },
+  created() {
+    this.fetchMovieList();
   }
 };
 </script>

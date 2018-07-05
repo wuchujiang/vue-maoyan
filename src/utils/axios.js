@@ -53,7 +53,7 @@ export default {
         })
       })
         .then(res => {
-          resolve(res);
+          resolve(res.data);
         })
         .catch(err => {
           reject(err);
@@ -70,7 +70,9 @@ export default {
           cancel = c;
         })
       }).then(res => {
-        resolve(res);
+        resolve(res.data);
+      }).catch(err => {
+        reject(err);
       });
     });
   }

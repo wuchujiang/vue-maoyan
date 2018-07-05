@@ -15,7 +15,7 @@ export default {
   name: "home",
   components: { NavHeader, fixFooter },
   created() {
-    axios.get("/hostproxy/dianying/cities.json");
+    axios.get("/dianying/cities.json");
   }
 };
 </script>

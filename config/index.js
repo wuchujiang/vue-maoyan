@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'https://wx.maoyan.com',
+        target: 'http://m.maoyan.com',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''   //需要rewrite重写的,
