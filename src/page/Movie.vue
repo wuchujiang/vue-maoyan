@@ -18,11 +18,11 @@
 </template>
 
 <script>
-import listItem from '@/components/list-item';
+import listItem from "@/components/list-item";
 
 export default {
   name: "movie",
-  components: {listItem},
+  components: { listItem },
   data() {
     return {
       tabIndex: 0,
@@ -62,6 +62,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   line-height: 88px;
+  background: #fff;
   .city,
   .search {
     width: 100px;
