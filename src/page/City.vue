@@ -2,16 +2,16 @@
 	<section>
 		<section class="city">
 			<section class="location-city">
-				<h6 data-id="local">定位城市</h6>
+				<h6 class="fixed-title" data-id="local">定位城市</h6>
 				<section class="city-wrap">
 					<div class="city-btn">定位..城市</div>
 				</section>
 			</section>
 			<section v-if="visitList.length > 0" class="visit-city">
-				<h6 data-id="history">最近访问城市</h6>
+				<h6 class="fixed-title" data-id="history">最近访问城市</h6>
 			</section>
 			<section class="hot-city">
-				<h6 data-id="hot">热门城市</h6>
+				<h6 class="fixed-title" data-id="hot">热门城市</h6>
 				<div class="city-wrap">
 					<div class="city-btn" :key="item.id" v-for="item in hotList">
 						{{item.nm}}
@@ -20,7 +20,7 @@
 			</section>
 			<section class="list-city">
 				<div class="list-box" v-for="item, index in cityList" :key="index">
-					<h6 :data-id="item.key">{{item.key}}</h6>
+					<h6 class="fixed-title" :data-id="item.key">{{item.key}}</h6>
 					<ul>
 						<li v-for="k in item.value" :key="k.id" :data-id="k.id" :data-py="k.py">{{k.nm}}</li>
 					</ul>
@@ -30,7 +30,7 @@
 		<section class="nav">
 			<section class="nav-wrap">
 				<section class="nav-item" data-id="local">定位</section>
-				<section class="nav-item" data-id="history">最近</section>
+				<section v-if="visitList.length" class="nav-item" data-id="history">最近</section>
 				<section class="nav-item" data-id="hot">热门</section>
 				<section v-for="item in navbar" :key="item" :data-id="item" class="nav-item nav-letter">{{item}}</section>
 			</section>
@@ -115,9 +115,7 @@ export default {
   created() {
     this.fetchCity();
   },
-  mounted() {
-    this.scroll();
-  },
+  mounted() {},
   methods: {
     async fetchCity() {
       const city = localStorage.getItem("city");
@@ -138,6 +136,9 @@ export default {
         const sortList = this.sortList(cts);
         this.cityList = sortList.newKeys;
         this.navbar = sortList.at;
+        this.$nextTick(() => {
+          this.scroll();
+        });
       }
     },
     sortList(citys) {
@@ -163,12 +164,25 @@ export default {
     },
     scroll() {
       const navItem = document.querySelectorAll(".nav-item");
+      const navWrap = document.querySelector(".nav-wrap");
+      navWrap.onscroll = function(e) {
+        e.preventDefault();
+        return false;
+      };
       navItem.forEach(item => {
         item.addEventListener(
-          "onclick",
+          "click",
           () => {
-            const dataId = item.dataList.id;
-            console.log(dataId);
+            const dataId = item.dataset.id;
+            const fixedTitle = [...document.querySelectorAll(".fixed-title")];
+            const fixedItem = fixedTitle.filter(
+              item => item.dataset.id === dataId
+            )[0];
+            if (fixedItem) {
+              const offsetTop = fixedItem.offsetTop;
+              window.scrollTo(0, offsetTop);
+            }
+            console.log(fixedItem);
           },
           false
         );
