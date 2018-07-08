@@ -3,6 +3,7 @@ import Router from "vue-router";
 import Home from "@/page/Home";
 import Movie from "@/page/Movie";
 import Cinema from "@/page/Cinema";
+import City from "@/page/City";
 
 Vue.use(Router);
 
@@ -22,6 +23,10 @@ export default new Router({
           component: Cinema
         }
       ]
+    },
+    {
+      path: "/city",
+      component: City
     }
   ]
 });

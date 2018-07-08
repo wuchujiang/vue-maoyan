@@ -1,7 +1,7 @@
 <template>
     <section class="movie">
       <section class="min-header">
-        <div class="city">深圳<i class="city-entry-arrow"></i></div>
+        <div class="city"><router-link to="/city">深圳<i class="city-entry-arrow"></i></router-link></div>
         <div class="tab-link">
           <span :class="{ active: tabIndex===0, 'tab-item': true }" @click="selectTab(0)">正在热映</span>
           <span :class="{ active: tabIndex===1, 'tab-item': true }" @click="selectTab(1)">即将上映</span>

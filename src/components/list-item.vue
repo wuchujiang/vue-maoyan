@@ -6,7 +6,7 @@
     <div class="movie-wrap">
       <div class="movie-content">
         <h4>{{data.nm}}</h4>
-        <p v-if="data.globalReleased" class="score">观众评<span>{{data.sc | toFloat}}</span></p>
+        <p v-if="data.globalReleased" class="score">观众评 <span>{{data.sc | toFloat}}</span></p>
         <p v-else class="score"><span>{{data.wish  }}想看</span></p>
         <p class="star">主演:{{data.star}}</p>
         <p class="field">{{data.showInfo}}</p>
@@ -45,7 +45,7 @@ export default {
   padding: 0 30px;
   display: flex;
   .movie-img {
-    height: 180px;
+    height: 220px;
     overflow: hidden;
     background: #f5f5f5;
     margin-top: 32px;
@@ -76,7 +76,7 @@ export default {
     }
     p {
       @include ellipsis;
-      margin-top: 10px;
+      margin-top: 16px;
     }
   }
   .movie-button {
