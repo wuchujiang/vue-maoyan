@@ -120,26 +120,23 @@ export default {
     async fetchCity() {
       const city = localStorage.getItem("city");
       const visitList = localStorage.getItem("visitList");
+      const cts = null;
       if (visitList) {
         this.visitList = JSON.parse(visitList);
       }
       if (city) {
-        const cts = JSON.parse(city);
-        this.hotList = cts.slice(0, 10);
-        const sortList = this.sortList(cts);
-        this.cityList = sortList.newKeys;
-        this.navbar = sortList.at;
+        cts = JSON.parse(city);
       } else {
         const city = await this.$axios.get("/dianying/cities.json");
-        const cts = city.cts;
-        this.hotList = cts.slice(0, 10);
-        const sortList = this.sortList(cts);
-        this.cityList = sortList.newKeys;
-        this.navbar = sortList.at;
-        this.$nextTick(() => {
-          this.scroll();
-        });
+        cts = city.cts;
       }
+      this.hotList = cts.slice(0, 10);
+      const sortList = this.sortList(cts);
+      this.cityList = sortList.newKeys;
+      this.navbar = sortList.at;
+      this.$nextTick(() => {
+        this.scroll();
+      });
     },
     sortList(citys) {
       // 循环数据，根据拼音首字母匹配数字
