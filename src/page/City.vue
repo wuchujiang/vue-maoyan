@@ -28,11 +28,11 @@
 			</section>
 		</section>
 		<section class="nav">
-			<section class="nav-wrap">
-				<section class="nav-item" data-id="local">定位</section>
-				<section v-if="visitList.length" class="nav-item" data-id="history">最近</section>
-				<section class="nav-item" data-id="hot">热门</section>
-				<section v-for="item in navbar" :key="item" :data-id="item" class="nav-item nav-letter">{{item}}</section>
+			<section @touchmove.prevent="touchmove" class="nav-wrap">
+				<section @click.prevent="scrollPage('local')" class="nav-item" data-id="local">定位</section>
+				<section @click.prevent="scrollPage('history')" v-if="visitList.length" class="nav-item" data-id="history">最近</section>
+				<section @click.prevent="scrollPage('hot')" class="nav-item" data-id="hot">热门</section>
+				<section @click.prevent="scrollPage(item)" v-for="item in navbar" :key="item" :data-id="item" class="nav-item nav-letter">{{item}}</section>
 			</section>
 		</section>
 	</section>
@@ -81,9 +81,8 @@
 }
 .nav {
   position: fixed;
-  width: 60px;
+  width: 100px;
   height: 100%;
-  position: fixed;
   right: 0;
   top: 0;
   bottom: 0;
@@ -93,6 +92,9 @@
   line-height: 32px;
   z-index: 100;
   text-align: center;
+  .nav-wrap{
+    width: 100px;
+  }
   .nav-letter {
     padding-left: 30px;
   }
@@ -109,7 +111,10 @@ export default {
       hotList: [],
       visitList: [],
       locationCity: {},
-      navbar: []
+      navbar: [],
+      navWrapOffsetTop: '',
+      navWrap: null,
+      navItem: null,
     };
   },
   created() {
@@ -120,7 +125,7 @@ export default {
     async fetchCity() {
       const city = localStorage.getItem("city");
       const visitList = localStorage.getItem("visitList");
-      const cts = null;
+      let cts = null;
       if (visitList) {
         this.visitList = JSON.parse(visitList);
       }
@@ -134,9 +139,6 @@ export default {
       const sortList = this.sortList(cts);
       this.cityList = sortList.newKeys;
       this.navbar = sortList.at;
-      this.$nextTick(() => {
-        this.scroll();
-      });
     },
     sortList(citys) {
       // 循环数据，根据拼音首字母匹配数字
@@ -159,31 +161,36 @@ export default {
         newKeys
       };
     },
-    scroll() {
-      const navItem = document.querySelectorAll(".nav-item");
-      const navWrap = document.querySelector(".nav-wrap");
-      navWrap.onscroll = function(e) {
-        e.preventDefault();
-        return false;
-      };
-      navItem.forEach(item => {
-        item.addEventListener(
-          "click",
-          () => {
-            const dataId = item.dataset.id;
-            const fixedTitle = [...document.querySelectorAll(".fixed-title")];
-            const fixedItem = fixedTitle.filter(
-              item => item.dataset.id === dataId
-            )[0];
-            if (fixedItem) {
-              const offsetTop = fixedItem.offsetTop;
-              window.scrollTo(0, offsetTop);
-            }
-            console.log(fixedItem);
-          },
-          false
-        );
-      });
+    scrollPage(id) {
+      if(!this.fixedTitle) {
+        this.fixedTitle = [...document.querySelectorAll(".fixed-title")];
+      }
+      const fixedItem = this.fixedTitle.filter(item => item.dataset.id === id)[0];
+      if (fixedItem) {
+        const offsetTop = fixedItem.offsetTop;
+        window.scrollTo(0, offsetTop);
+      }
+    },
+    touchmove(e) {
+      const touch = e.touches[0];
+      if(!this.navWrap) {
+        this.navWrap = document.querySelector('.nav-wrap');
+        this.navWrapOffsetTop = this.navWrap.offsetTop;
+        this.navItem = [...document.querySelectorAll('.nav-item')];
+        this.bx = this.navItem[0].clientHeight;
+      }
+
+      if(!this.fixedTitle) {
+        this.fixedTitle = [...document.querySelectorAll(".fixed-title")];
+      }
+      
+      const dx = touch.clientY - this.navWrapOffsetTop;
+      if(dx >= 0) {
+        const idx = Math.round(dx / this.bx);
+        const currentItem = this.fixedTitle[idx];
+        const currentTop = currentItem.offsetTop;
+        window.scrollTo(0, currentTop);
+      }
     }
   }
 };
