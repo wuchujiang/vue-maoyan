@@ -3,26 +3,37 @@
 		<section class="city">
 			<section class="location-city">
 				<h6 class="fixed-title" data-id="local">定位城市</h6>
-				<section class="city-wrap">
-					<div class="city-btn">定位..城市</div>
-				</section>
+        <div class="city-box">
+          <section class="city-wrap">
+            <div @click="getLocation" class="city-btn">{{positionStatus.msg}}</div>
+          </section>
+        </div>
 			</section>
 			<section v-if="visitList.length > 0" class="visit-city">
 				<h6 class="fixed-title" data-id="history">最近访问城市</h6>
+        <div class="city-box">
+          <div class="city-wrap">
+            <div @click="selectCity(item)" class="city-btn" :key="item" v-for="item in visitList">
+              {{item}}
+            </div>
+				</div>
+        </div>
 			</section>
 			<section class="hot-city">
 				<h6 class="fixed-title" data-id="hot">热门城市</h6>
-				<div class="city-wrap">
-					<div class="city-btn" :key="item.id" v-for="item in hotList">
+				<div class="city-box">
+          <div class="city-wrap">
+					<div @click="selectCity(item.nm)" class="city-btn" :key="item.id" v-for="item in hotList">
 						{{item.nm}}
 					</div>
 				</div>
+        </div>
 			</section>
 			<section class="list-city">
 				<div class="list-box" v-for="item, index in cityList" :key="index">
 					<h6 class="fixed-title" :data-id="item.key">{{item.key}}</h6>
 					<ul>
-						<li v-for="k in item.value" :key="k.id" :data-id="k.id" :data-py="k.py">{{k.nm}}</li>
+						<li @click="selectCity(k.nm)" v-for="k in item.value" :key="k.id" :data-id="k.id" :data-py="k.py">{{k.nm}}</li>
 					</ul>
 				</div>
 			</section>
@@ -48,11 +59,12 @@
     font-weight: normal;
     line-height: 60px;
   }
-  .city-wrap {
+  .city-box {
     background: #f5f5f5;
     padding: 0 30px 30px 30px;
+  }
+  .city-wrap {
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
     .city-btn {
       width: 30%;
@@ -62,6 +74,10 @@
       height: 60px;
       line-height: 60px;
       margin-top: 30px;
+      margin-right: 4%;
+      &:nth-child(3n) {
+        margin-right: 0;
+      }
     }
   }
   .list-box {
@@ -92,7 +108,7 @@
   line-height: 32px;
   z-index: 100;
   text-align: center;
-  .nav-wrap{
+  .nav-wrap {
     width: 100px;
   }
   .nav-letter {
@@ -103,6 +119,7 @@
 
 
 <script>
+import jsonp from "jsonp";
 export default {
   name: "city",
   data() {
@@ -110,15 +127,19 @@ export default {
       cityList: [],
       hotList: [],
       visitList: [],
-      locationCity: {},
       navbar: [],
-      navWrapOffsetTop: '',
+      navWrapOffsetTop: "",
       navWrap: null,
       navItem: null,
+      positionStatus: {
+        code: "",
+        msg: ""
+      }
     };
   },
   created() {
     this.fetchCity();
+    this.getLocation();
   },
   mounted() {},
   methods: {
@@ -134,6 +155,7 @@ export default {
       } else {
         const city = await this.$axios.get("/dianying/cities.json");
         cts = city.cts;
+        localStorage.setItem("city", JSON.stringify(cts));
       }
       this.hotList = cts.slice(0, 10);
       const sortList = this.sortList(cts);
@@ -162,10 +184,12 @@ export default {
       };
     },
     scrollPage(id) {
-      if(!this.fixedTitle) {
+      if (!this.fixedTitle) {
         this.fixedTitle = [...document.querySelectorAll(".fixed-title")];
       }
-      const fixedItem = this.fixedTitle.filter(item => item.dataset.id === id)[0];
+      const fixedItem = this.fixedTitle.filter(
+        item => item.dataset.id === id
+      )[0];
       if (fixedItem) {
         const offsetTop = fixedItem.offsetTop;
         window.scrollTo(0, offsetTop);
@@ -173,24 +197,82 @@ export default {
     },
     touchmove(e) {
       const touch = e.touches[0];
-      if(!this.navWrap) {
-        this.navWrap = document.querySelector('.nav-wrap');
+      if (!this.navWrap) {
+        this.navWrap = document.querySelector(".nav-wrap");
         this.navWrapOffsetTop = this.navWrap.offsetTop;
-        this.navItem = [...document.querySelectorAll('.nav-item')];
+        this.navItem = [...document.querySelectorAll(".nav-item")];
         this.bx = this.navItem[0].clientHeight;
       }
 
-      if(!this.fixedTitle) {
+      if (!this.fixedTitle) {
         this.fixedTitle = [...document.querySelectorAll(".fixed-title")];
       }
-      
+
       const dx = touch.clientY - this.navWrapOffsetTop;
-      if(dx >= 0) {
+      if (dx >= 0) {
         const idx = Math.round(dx / this.bx);
         const currentItem = this.fixedTitle[idx];
         const currentTop = currentItem.offsetTop;
         window.scrollTo(0, currentTop);
       }
+    },
+    getLocation() {
+      if (this.positionStatus.code === "loading") {
+        return false;
+      }
+
+      if (this.positionStatus.code === "success") {
+        // 选取城市
+        this.selectCity(this.positionStatus.msg);
+        return false;
+      }
+
+      this.positionStatus = {
+        code: "loading",
+        msg: "正在定位"
+      };
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          // 根据坐标获取地址;
+          jsonp(
+            `https://apimobile.meituan.com/group/v1/city/latlng/${latitude},${longitude}?tag=1&_=1531143806763`,
+            null,
+            (err, res) => {
+              if (err) {
+                this.positionStatus = {
+                  code: "error",
+                  msg: "定位失败"
+                };
+              } else {
+                const data = res.data;
+                localStorage.setItem("localCity", JSON.stringify(res.data));
+                this.positionStatus = {
+                  code: "success",
+                  msg: data.city
+                };
+              }
+            }
+          );
+        },
+        err => {
+          this.positionStatus = {
+            code: "error",
+            msg: "定位失败"
+          };
+        }
+      );
+    },
+
+    selectCity(city) {
+      let visitList = localStorage.getItem("visitList");
+      visitList = visitList ? JSON.parse(visitList) : [];
+      if (!visitList.includes(city)) {
+        visitList.push(city);
+      }
+      localStorage.setItem("visitList", JSON.stringify(visitList.slice(-10)));
+      localStorage.setItem("locationCity", decodeURIComponent(city));
+      this.$router.push("/");
     }
   }
 };
