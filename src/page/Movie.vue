@@ -19,7 +19,7 @@
 
 <script>
 import listItem from "@/components/list-item";
-
+import Vue from 'vue';
 export default {
   name: "movie",
   components: { listItem },
@@ -37,7 +37,6 @@ export default {
     async fetchMovieList() {
       const movieList = await this.$axios.get("/ajax/movieOnInfoList");
       this.movieList = movieList.movieList;
-      console.log(movieList);
     }
   },
   created() {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "querystring";
-
+import loading from "./loading";
 let cancel,
   promiseArr = {};
 const CancelToken = axios.CancelToken;
@@ -8,7 +8,7 @@ const CancelToken = axios.CancelToken;
 axios.interceptors.request.use(
   config => {
     //发起请求时，取消掉当前正在进行的相同请求
-    console.log("显示loading");
+    loading.show();
     if (promiseArr[config.url]) {
       promiseArr[config.url]("操作取消");
       promiseArr[config.url] = cancel;
@@ -24,10 +24,11 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   response => {
-    console.log("隐藏loading");
+    loading.hide();
     return response;
   },
   err => {
+    loading.hide();
     return Promise.resolve(err.response);
   }
 );
