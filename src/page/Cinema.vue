@@ -4,7 +4,10 @@
 
 <script>
 export default {
-  name: "cinema"
+  name: "cinema",
+  mounted() {
+    console.log(this.$store.state)
+  }
 };
 </script>
 
