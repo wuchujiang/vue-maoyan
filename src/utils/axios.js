@@ -8,7 +8,7 @@ const CancelToken = axios.CancelToken;
 axios.interceptors.request.use(
   config => {
     //发起请求时，取消掉当前正在进行的相同请求
-    loading.show();
+    // loading.show();
     if (promiseArr[config.url]) {
       promiseArr[config.url]("操作取消");
       promiseArr[config.url] = cancel;
@@ -24,16 +24,17 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   response => {
-    loading.hide();
+    // loading.hide();
     return response;
   },
   err => {
-    loading.hide();
+    // loading.hide();
     return Promise.resolve(err.response);
   }
 );
 
 axios.defaults.baseURL = "/api";
+axios.defaults.withCredentials = true;
 
 //设置默认请求头
 axios.defaults.headers = {

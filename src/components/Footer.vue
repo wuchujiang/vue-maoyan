@@ -1,9 +1,12 @@
 <template>
-	<footer>
+	<div>
+    <footer>
 		<router-link to="/movie">电影</router-link>
 		<router-link to="/cinema">影院</router-link>
 		<router-link to="/about">我的</router-link>
 	</footer>
+  <div class="foot-wrap"></div>
+  </div>
 </template>
 
 <script>
@@ -33,6 +36,10 @@ footer {
       color: $baseColor;
     }
   }
+
 }
+  .foot-wrap{
+    height: 100px;
+  }
 </style>
 

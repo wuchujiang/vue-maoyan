@@ -44,6 +44,7 @@ export default {
 .movie-item {
   padding: 0 30px;
   display: flex;
+  background: #fff;
   .movie-img {
     height: 220px;
     overflow: hidden;

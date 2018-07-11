@@ -13,8 +13,8 @@
 				<h6 class="fixed-title" data-id="history">最近访问城市</h6>
         <div class="city-box">
           <div class="city-wrap">
-            <div @click="selectCity(item)" class="city-btn" :key="item" v-for="item in visitList">
-              {{item}}
+            <div @click="selectCity(item)" class="city-btn" :key="item.id" v-for="item in visitList">
+              {{item.nm}}
             </div>
 				</div>
         </div>
@@ -23,7 +23,7 @@
 				<h6 class="fixed-title" data-id="hot">热门城市</h6>
 				<div class="city-box">
           <div class="city-wrap">
-					<div @click="selectCity(item.nm)" class="city-btn" :key="item.id" v-for="item in hotList">
+					<div @click="selectCity(item)" class="city-btn" :key="item.id" v-for="item in hotList">
 						{{item.nm}}
 					</div>
 				</div>
@@ -33,7 +33,7 @@
 				<div class="list-box" v-for="item, index in cityList" :key="index">
 					<h6 class="fixed-title" :data-id="item.key">{{item.key}}</h6>
 					<ul>
-						<li @click="selectCity(k.nm)" v-for="k in item.value" :key="k.id" :data-id="k.id" :data-py="k.py">{{k.nm}}</li>
+						<li @click="selectCity(k)" v-for="k in item.value" :key="k.id" :data-id="k.id" :data-py="k.py">{{k.nm}}</li>
 					</ul>
 				</div>
 			</section>
@@ -120,6 +120,7 @@
 
 <script>
 import jsonp from "jsonp";
+import Cookies from 'js-cookie'
 export default {
   name: "city",
   data() {
@@ -223,7 +224,9 @@ export default {
 
       if (this.positionStatus.code === "success") {
         // 选取城市
-        this.selectCity(this.positionStatus.msg);
+        const item = this.localCity;
+        Cookies.set('ci', encodeURIComponent(`${item.id}, ${item.city}`));
+        this.selectCity(item);
         return false;
       }
 
@@ -246,7 +249,11 @@ export default {
                 };
               } else {
                 const data = res.data;
-                localStorage.setItem("localCity", JSON.stringify(res.data));
+                this.localCity = {
+                  nm: data.city,
+                  id: data.id,
+                  py: data.cityPinyin
+                };
                 this.positionStatus = {
                   code: "success",
                   msg: data.city
@@ -264,14 +271,13 @@ export default {
       );
     },
 
-    selectCity(city) {
+    selectCity(item) {
       let visitList = localStorage.getItem("visitList");
       visitList = visitList ? JSON.parse(visitList) : [];
-      if (!visitList.includes(city)) {
-        visitList.push(city);
-      }
-      localStorage.setItem("visitList", JSON.stringify(visitList.slice(-10)));
-      localStorage.setItem("locationCity", decodeURIComponent(city));
+      const newVisit = visitList.filter(i => i.id !== item.id);
+      newVisit.push(item);
+      localStorage.setItem("visitList", JSON.stringify(newVisit.slice(-10)));
+      Cookies.set('ci', encodeURIComponent(`${item.id}, ${item.nm}`));
       this.$router.push("/");
     }
   }

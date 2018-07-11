@@ -12,14 +12,38 @@
         <section v-show="tabIndex===0">
           <list-item :key="data.id" v-for="data in movieList" :data="data"></list-item>
         </section>
-        <section v-show="tabIndex===1">即将上映列表</section>
+        <section v-show="tabIndex===1">
+          <section class="most-expected">
+            <p class="most-ex-title">近期最受欢迎</p>
+            <section class="expected-movie-box">
+              <section class="mu-item" v-for="item in expectedList" :key="item.id">
+                <div class="mu-i-img">
+                  <img :src="item.img.replace('w.h', '180.230')" alt="">
+                  <p class="wish">{{item.wish}}人想看</p>
+                </div>
+                <div class="mu-i-title">{{item.nm}}</div>
+                <div class="mu-i-date">{{item.comingTitle.split(' ')[0]}}</div>
+              </section>
+            </section>
+          </section>
+          <section class="will-show">
+            <section class="wi-col" :key="index" v-for="(item,index) in comingList">
+              <div class="wi-col-date">{{item.title}}</div>
+              <section class="wi-mov-box">
+                <list-item v-for="data in item.value" :key="data.id" :data="data"></list-item>
+              </section>
+            </section>
+          </section>
+        </section>
       </section>
     </section>
 </template>
 
 <script>
 import listItem from "@/components/list-item";
+import Cookies from 'js-cookie';
 import Vue from 'vue';
+
 export default {
   name: "movie",
   components: { listItem },
@@ -28,7 +52,9 @@ export default {
       tabIndex: 0,
       movieList: [],
       willList: [],
-      locationCity: "北京"
+      locationCity: "北京",
+      expectedList: [],
+      comingList: [],
     };
   },
   methods: {
@@ -38,14 +64,54 @@ export default {
     async fetchMovieList() {
       const movieList = await this.$axios.get("/ajax/movieOnInfoList");
       this.movieList = movieList.movieList;
+    },
+    async fetchExpected() {
+      const movieList = await this.$axios.get("/ajax/mostExpected?ci=40&limit=10&offset=0&token=");
+      this.expectedList = movieList.coming;
+    },
+    async fetchCominglist() {
+      const movieList = await this.$axios.get('/ajax/comingList?ci=30&token=&limit=10');
+      const coming = movieList.coming;
+      const hash = {};
+
+      coming.forEach(item => {
+        const rt = item.rt;
+        if(hash[rt]) {
+          hash[rt].push(item)
+        }else{
+          hash[rt] = [item];
+        }
+      });
+      
+      // hash to array
+      let hashKey = Object.keys(hash);
+      hashKey.sort((a, b) => {
+        return new Date(a) > new Date(b)
+      });
+      this.comingList = hashKey.map(i => ({
+        title: hash[i][0].comingTitle,
+        value: hash[i],
+      }));
+      console.log(this.comingList)
     }
   },
   created() {
-    const locationCity = localStorage.getItem("locationCity");
-    if (locationCity) {
-      this.locationCity = locationCity;
+    const localCity = Cookies.get("ci");
+    if (localCity) {
+      const temp = decodeURIComponent(localCity).split(',');
+      if(temp.length) {
+        this.locationCity = temp[1];
+      }
     }
     this.fetchMovieList();
+  },
+  watch:{
+    tabIndex(tab) {
+      if(tab === 1 && this.expectedList.length === 0) {
+        this.fetchExpected();
+        this.fetchCominglist();
+      }
+    }
   }
 };
 </script>
@@ -67,6 +133,7 @@ export default {
   justify-content: space-between;
   line-height: 88px;
   background: #fff;
+  z-index: 100;
   .city,
   .search {
     width: 100px;
@@ -104,7 +171,61 @@ export default {
     background-repeat: no-repeat;
     background-position: center;
   }
+  
 }
+.most-expected{
+    background: #fff;
+    padding: 30px;
+    .most-ex-title{
+      margin-bottom: 30px;
+    }
+    .expected-movie-box{
+      width: 100%;
+      overflow: scroll;
+      white-space: nowrap;
+      .mu-item{
+        display: inline-block;
+        margin-right: 20px;
+        width: 180px;
+        overflow: hidden;
+      }
+      .mu-i-title{
+        @include ellipsis;
+        color: #000;
+        line-height: 50px;
+        font-size: 26px;
+      }
+      .mu-i-date{
+        color: #999;
+        font-size: 22px; 
+      }
+      .mu-i-img{
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+        .wish{
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 50px;
+          background: linear-gradient(-180deg,rgba(77,77,77,0),#000);
+          text-align: center;
+          font-size: 24px;
+          line-height: 50px;
+          color: #faaf00;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+  .will-show{
+    background-color: #fff;
+    margin-top: 40px;
+    .wi-col-date{
+      padding:30px 30px 0 30px;
+    }
+  }
 </style>
 
 
