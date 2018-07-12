@@ -42,6 +42,7 @@
 <script>
 import listItem from "@/components/list-item";
 import Cookies from 'js-cookie';
+import {mapMutations} from 'vuex';
 import Vue from 'vue';
 
 export default {
@@ -58,6 +59,7 @@ export default {
     };
   },
   methods: {
+    ...mapMutations(['setState']),
     selectTab(index) {
       this.tabIndex = index;
     },
@@ -92,10 +94,10 @@ export default {
         title: hash[i][0].comingTitle,
         value: hash[i],
       }));
-      console.log(this.comingList)
     }
   },
   created() {
+    this.setState({headerTitle: '猫眼电影'});
     const localCity = Cookies.get("ci");
     if (localCity) {
       const temp = decodeURIComponent(localCity).split(',');

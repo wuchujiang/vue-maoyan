@@ -1,0 +1,89 @@
+<template>
+  <section class="cinema-movie">
+    <movie-introduction :data="movieDetail"></movie-introduction>
+  </section>
+</template>
+
+<script>
+import MovieIntroduction from '@/components/movie-introduction';
+import {mapMutations} from 'vuex';
+import {formatDate, getWeek} from '@/utils';
+
+export default {
+  name: 'cinema-movie',
+  data() {
+    return {
+      movieDetail: {},
+      showDays: [],
+    }
+  },
+  created() {
+    this.fetchMovieInfomation();
+    this.fetchCinemaMovie();
+  },
+
+  components: {
+    MovieIntroduction
+  },
+  methods: {
+    async fetchMovieInfomation() {
+      const movieDetail = await this.$axios.get('/ajax/detailmovie?movieId=1200486');
+      this.movieDetail = movieDetail.detailMovie;
+      this.setState({headerTitle: movieDetail.detailMovie.nm});
+    },
+    async fetchCinemaMovie() {
+      const params = {
+        movieId: 1200486,
+        day: '2018-07-12',
+        offset: 0,
+        limit: 20,
+        districtId: -1,
+        lineId: -1,
+        hallType: -1,
+        brandId: -1,
+        serviceId: -1,
+        areaId: -1,
+        stationId: -1,
+        updateShowDay: true,
+        cityId: 30
+      }
+      const movieDetail = await this.$axios.post(`/ajax/movie?forceUpdate=${new Date().getTime()}`, params);
+      this.showDays = this.transDays(movieDetail.showDays.dates);
+
+    },
+    ...mapMutations(['setState']),
+    // 转换days
+    transDays(days) {
+      const hash = [];
+      // 生成最近三天的数组；
+      let threeDays = ['今天', '明天', '后天'];
+      threeDays = threeDays.map((item, index) => {
+        const currentDay = formatDate(new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * index ));
+        return{
+          day: formatDate(new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * index )),
+          desc: item,
+        }
+      });
+      const newDays = days.map(day => {
+        let desc = '';
+        const date = day.date;
+        threeDays.forEach((item, index) => {
+          console.log(date, item)
+          if(date === item.day) {
+            desc = item.desc;
+          }
+        });
+        if(desc === '') {
+          desc = getWeek(date.replace('-', '/'));
+        }
+        return {
+          desc: `${desc}${formatDate(new Date(date.replace('-', '/')), 'yyyy年MM月dd日').slice(5)}`,
+          day: date
+        }
+      });
+      return newDays;
+    }
+  }
+}
+</script>
+

@@ -4,6 +4,7 @@ import Home from "@/page/Home";
 import Movie from "@/page/Movie";
 import Cinema from "@/page/Cinema";
 import City from "@/page/City";
+import CinemaMovie from '@/page/Cinema/Movie';
 
 Vue.use(Router);
 
@@ -20,7 +21,11 @@ export default new Router({
         },
         {
           path: "cinema",
-          component: Cinema
+          component: Cinema,
+        },
+        {
+          path: 'cinema/movie/:id',
+          component: CinemaMovie
         }
       ]
     },

@@ -15,7 +15,7 @@ export default {
   props: ["left", "right", "back", "fixed"],
   data() {
     return {};
-  }
+  },
 };
 </script>
 

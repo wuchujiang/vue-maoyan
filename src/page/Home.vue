@@ -1,6 +1,6 @@
 <template>
     <div>
-      <NavHeader fixed="true">猫眼电影</NavHeader>
+      <NavHeader :fixed="headerFixed">{{headerTitle}}</NavHeader>
       <router-view></router-view>
       <fix-footer></fix-footer>
     </div>
@@ -9,10 +9,14 @@
 <script>
 import NavHeader from "../components/Header";
 import fixFooter from "../components/Footer";
+import {mapState} from 'vuex';
 
 export default {
   name: "home",
-  components: { NavHeader, fixFooter }
+  components: { NavHeader, fixFooter },
+  computed:{
+    ...mapState(['headerTitle', 'headerFixed'])
+  }
 };
 </script>
 

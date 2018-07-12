@@ -1,7 +1,7 @@
 <template>
   <section class="movie-item">
     <div class="movie-img">
-      <img :src="data.img.replace('w.h', '160.180')" alt="">
+      <img :src="data.img | transformImg('160.180')" alt="">
     </div>
     <div class="movie-wrap">
       <div class="movie-content">
@@ -22,19 +22,6 @@
 export default {
   name: "movie-item",
   props: ["data"],
-  filters: {
-    toFloat(num) {
-      if (typeof num !== "number") {
-        return num;
-      }
-
-      if (!Number.isInteger(num)) {
-        return num;
-      }
-
-      return num.toFixed(1);
-    }
-  }
 };
 </script>
 
