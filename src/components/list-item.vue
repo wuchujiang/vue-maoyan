@@ -1,7 +1,7 @@
 <template>
   <section class="movie-item">
     <div class="movie-img">
-      <img :src="data.img | transformImg('160.180')" alt="">
+      <img :src="data.img | tranformImg('160.180')" alt="">
     </div>
     <div class="movie-wrap">
       <div class="movie-content">

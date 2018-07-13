@@ -18,7 +18,7 @@
             <section class="expected-movie-box">
               <section class="mu-item" v-for="item in expectedList" :key="item.id">
                 <div class="mu-i-img">
-                  <img :src="item.img.replace('w.h', '180.230')" alt="">
+                  <img :src="item.img | tranformImg(180.230)" alt="">
                   <p class="wish">{{item.wish}}人想看</p>
                 </div>
                 <div class="mu-i-title">{{item.nm}}</div>

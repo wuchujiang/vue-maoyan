@@ -1,5 +1,4 @@
 export const formatDate =  (date, fmt= 'yyyy-MM-dd') => {
-  console.log(date)
   var o = {   
     "M+" : date.getMonth()+1,                 //月份   
     "d+" : date.getDate(),                    //日   

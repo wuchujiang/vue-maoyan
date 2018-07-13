@@ -1,6 +1,8 @@
 <template>
   <section class="cinema-movie">
     <movie-introduction :data="movieDetail"></movie-introduction>
+    <show-days v-model="showDay" :data="showDays"></show-days>
+    <cinema-filter :region="brandDetail"></cinema-filter>
   </section>
 </template>
 
@@ -8,6 +10,8 @@
 import MovieIntroduction from '@/components/movie-introduction';
 import {mapMutations} from 'vuex';
 import {formatDate, getWeek} from '@/utils';
+import ShowDays from '@/components/show-days';
+import CinemaFilter from '@/components/cinema-filter';
 
 export default {
   name: 'cinema-movie',
@@ -15,6 +19,8 @@ export default {
     return {
       movieDetail: {},
       showDays: [],
+      showDay: formatDate(new Date(), 'yyyy-MM-dd'),
+      brandDetail: {},
     }
   },
   created() {
@@ -23,12 +29,15 @@ export default {
   },
 
   components: {
-    MovieIntroduction
+    MovieIntroduction,ShowDays,CinemaFilter
   },
   methods: {
     async fetchMovieInfomation() {
-      const movieDetail = await this.$axios.get('/ajax/detailmovie?movieId=1200486');
+      const fetchMovie = this.$axios.get('/ajax/detailmovie?movieId=1200486');
+      const fetchBrand = this.$axios.get(`/ajax/filterCinemas?movieId=1200486&day=${formatDate(new Date)}`)
+      const [movieDetail,brandDetail] = await Promise.all([fetchMovie, fetchBrand]);
       this.movieDetail = movieDetail.detailMovie;
+      this.brandDetail = brandDetail;
       this.setState({headerTitle: movieDetail.detailMovie.nm});
     },
     async fetchCinemaMovie() {
@@ -45,7 +54,7 @@ export default {
         areaId: -1,
         stationId: -1,
         updateShowDay: true,
-        cityId: 30
+        cityId: 30,
       }
       const movieDetail = await this.$axios.post(`/ajax/movie?forceUpdate=${new Date().getTime()}`, params);
       this.showDays = this.transDays(movieDetail.showDays.dates);
@@ -68,7 +77,6 @@ export default {
         let desc = '';
         const date = day.date;
         threeDays.forEach((item, index) => {
-          console.log(date, item)
           if(date === item.day) {
             desc = item.desc;
           }
@@ -83,6 +91,8 @@ export default {
       });
       return newDays;
     }
+  },
+  watch: {
   }
 }
 </script>
