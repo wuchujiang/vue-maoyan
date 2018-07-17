@@ -9,6 +9,7 @@ Vue.use(Vuex)
 const state = {
   headerTitle: '猫眼电影',
   headerFixed: true,
+  footShow: true,
 };
 
 export default new Vuex.Store({

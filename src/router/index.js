@@ -25,6 +25,7 @@ export default new Router({
         },
         {
           path: 'cinema/movie/:id',
+          name: 'cinema-movie',
           component: CinemaMovie
         }
       ]

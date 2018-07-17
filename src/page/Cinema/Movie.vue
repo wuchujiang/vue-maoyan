@@ -2,7 +2,7 @@
   <section class="cinema-movie">
     <movie-introduction :data="movieDetail"></movie-introduction>
     <show-days v-model="showDay" :data="showDays"></show-days>
-    <cinema-filter :region="brandDetail"></cinema-filter>
+    <cinema-filter :region="brandDetail" v-model="cinemaList"></cinema-filter>
   </section>
 </template>
 
@@ -21,9 +21,11 @@ export default {
       showDays: [],
       showDay: formatDate(new Date(), 'yyyy-MM-dd'),
       brandDetail: {},
+      cinemaList: [],
     }
   },
   created() {
+    this.setState({footShow: false});
     this.fetchMovieInfomation();
     this.fetchCinemaMovie();
   },
@@ -33,12 +35,12 @@ export default {
   },
   methods: {
     async fetchMovieInfomation() {
-      const fetchMovie = this.$axios.get('/ajax/detailmovie?movieId=1200486');
-      const fetchBrand = this.$axios.get(`/ajax/filterCinemas?movieId=1200486&day=${formatDate(new Date)}`)
+      const fetchMovie = this.$axios.get(`/ajax/detailmovie?movieId=${this.$route.params.id}`);
+      const fetchBrand = this.$axios.get(`/ajax/filterCinemas?movieId=${this.$route.params.id}&day=${formatDate(new Date)}`)
       const [movieDetail,brandDetail] = await Promise.all([fetchMovie, fetchBrand]);
       this.movieDetail = movieDetail.detailMovie;
       this.brandDetail = brandDetail;
-      this.setState({headerTitle: movieDetail.detailMovie.nm});
+      this.setState({headerTitle: movieDetail.detailMovie.nm, footShow: false});
     },
     async fetchCinemaMovie() {
       const params = {

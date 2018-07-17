@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div v-if="show">
     <footer>
 		<router-link to="/movie">电影</router-link>
 		<router-link to="/cinema">影院</router-link>
@@ -11,7 +11,8 @@
 
 <script>
 export default {
-  name: "fuuter"
+  name: "fuuter",
+  props: ['show']
 };
 </script>
 

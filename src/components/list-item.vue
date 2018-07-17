@@ -65,6 +65,7 @@ export default {
     p {
       @include ellipsis;
       margin-top: 16px;
+      color: #666;
     }
   }
   .movie-button {

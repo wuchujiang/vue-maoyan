@@ -10,7 +10,7 @@
       </section>
       <section class="movie-body">
         <section v-show="tabIndex===0">
-          <list-item :key="data.id" v-for="data in movieList" :data="data"></list-item>
+          <router-link :key="data.id" v-for="data in movieList" :to="{name: 'cinema-movie', params: {id: data.id}}" ><list-item :data="data"></list-item></router-link>
         </section>
         <section v-show="tabIndex===1">
           <section class="most-expected">
