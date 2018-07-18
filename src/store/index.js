@@ -1,15 +1,16 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from "vue";
+import Vuex from "vuex";
 
-import mutations from './mutations';
-import actions from './actions';
-import getters from './getters';
-Vue.use(Vuex)
+import mutations from "./mutations";
+import actions from "./actions";
+import getters from "./getters";
+Vue.use(Vuex);
 
 const state = {
-  headerTitle: '猫眼电影',
+  headerTitle: "猫眼电影",
   headerFixed: true,
   footShow: true,
+  input: ""
 };
 
 export default new Vuex.Store({
@@ -17,4 +18,4 @@ export default new Vuex.Store({
   getters,
   actions,
   mutations
-})
+});

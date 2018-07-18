@@ -4,7 +4,9 @@ import Home from "@/page/Home";
 import Movie from "@/page/Movie";
 import Cinema from "@/page/Cinema";
 import City from "@/page/City";
-import CinemaMovie from '@/page/Cinema/Movie';
+import CinemaMovie from "@/page/Cinema/Movie";
+import Input from "@/page/Input";
+import Select from "@/page/Select";
 
 Vue.use(Router);
 
@@ -21,24 +23,28 @@ export default new Router({
         },
         {
           path: "cinema",
-          component: Cinema,
-          
+          component: Cinema
         },
         {
-          path: 'cinema/movie/:id',
-          name: 'cinema-movie',
+          path: "cinema/movie/:id",
+          name: "cinema-movie",
           component: CinemaMovie
         }
       ]
     },
     {
       path: "/city",
-      component: City,
+      component: City
     },
     {
-      path: '/city/detail',
-      component: xxxx,
+      path: "/input",
+      component: Input,
+      children: [
+        {
+          path: "select",
+          component: Select
+        }
+      ]
     }
-
   ]
 });
