@@ -22,6 +22,7 @@ export default new Router({
         {
           path: "cinema",
           component: Cinema,
+          
         },
         {
           path: 'cinema/movie/:id',
@@ -32,7 +33,12 @@ export default new Router({
     },
     {
       path: "/city",
-      component: City
+      component: City,
+    },
+    {
+      path: '/city/detail',
+      component: xxxx,
     }
+
   ]
 });

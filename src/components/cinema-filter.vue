@@ -180,7 +180,7 @@ export default {
         day: this.day,
       };
       const filterMovie = await this.$axios.post(`/ajax/movie?forceUpdate=${new Date().getTime()}`, params);
-      this.$emit('click', filterMovie);
+      this.$emit('click', filterMovie.cinemas);
     },
      // 获取高度
     getFilterHeight() {

@@ -3,6 +3,9 @@
     <movie-introduction :data="movieDetail"></movie-introduction>
     <show-days v-model="showDay" :data="showDays"></show-days>
     <cinema-filter :region="brandDetail" v-model="cinemaList"></cinema-filter>
+    <section class="cinema-movie-box">
+      <cinema-item v-for="item in cinemaList" :data="item" :key="item.id"></cinema-item>
+    </section>
   </section>
 </template>
 
@@ -12,7 +15,7 @@ import {mapMutations} from 'vuex';
 import {formatDate, getWeek} from '@/utils';
 import ShowDays from '@/components/show-days';
 import CinemaFilter from '@/components/cinema-filter';
-
+import CinemaItem from '@/components/cinema-item';
 export default {
   name: 'cinema-movie',
   data() {
@@ -31,12 +34,12 @@ export default {
   },
 
   components: {
-    MovieIntroduction,ShowDays,CinemaFilter
+    MovieIntroduction,ShowDays,CinemaFilter,CinemaItem
   },
   methods: {
     async fetchMovieInfomation() {
       const fetchMovie = this.$axios.get(`/ajax/detailmovie?movieId=${this.$route.params.id}`);
-      const fetchBrand = this.$axios.get(`/ajax/filterCinemas?movieId=${this.$route.params.id}&day=${formatDate(new Date)}`)
+      const fetchBrand = this.$axios.get(`/ajax/filterCinemas?movieId=${this.$route.params.id}&day=${formatDate(new Date)}`);
       const [movieDetail,brandDetail] = await Promise.all([fetchMovie, fetchBrand]);
       this.movieDetail = movieDetail.detailMovie;
       this.brandDetail = brandDetail;
@@ -45,7 +48,7 @@ export default {
     async fetchCinemaMovie() {
       const params = {
         movieId: 1200486,
-        day: '2018-07-12',
+        day: formatDate(new Date()),
         offset: 0,
         limit: 20,
         districtId: -1,
@@ -60,6 +63,7 @@ export default {
       }
       const movieDetail = await this.$axios.post(`/ajax/movie?forceUpdate=${new Date().getTime()}`, params);
       this.showDays = this.transDays(movieDetail.showDays.dates);
+      this.cinemaList = movieDetail.cinemas;
 
     },
     ...mapMutations(['setState']),
@@ -92,10 +96,17 @@ export default {
         }
       });
       return newDays;
-    }
+    },
   },
   watch: {
   }
 }
 </script>
+
+<style lang="scss">
+  .cinema-movie-box{
+    background: #fff;
+  }
+</style>
+
 
