@@ -42,6 +42,7 @@ axios.defaults.headers = {
 };
 axios.defaults.timeout = 10000;
 
+
 export default {
   //get请求
   get(url, param) {
