@@ -4,7 +4,9 @@
     <show-days v-model="showDay" :data="showDays"></show-days>
     <cinema-filter :region="brandDetail" v-model="cinemaList"></cinema-filter>
     <section class="cinema-movie-box">
-      <cinema-item v-for="item in cinemaList" :data="item" :key="item.id"></cinema-item>
+      <router-link v-for="item in cinemaList" :key="item.id" :to="{name: 'shows', params: {id: item.id}}">
+        <cinema-item :data="item" ></cinema-item>
+      </router-link>
     </section>
   </section>
 </template>

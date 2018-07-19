@@ -7,6 +7,8 @@ import City from "@/page/City";
 import CinemaMovie from "@/page/Cinema/Movie";
 import Input from "@/page/Input";
 import Select from "@/page/Select";
+import Shows from "@/page/Shows";
+
 
 Vue.use(Router);
 
@@ -29,6 +31,11 @@ export default new Router({
           path: "cinema/movie/:id",
           name: "cinema-movie",
           component: CinemaMovie
+        },
+        {
+          path: 'shows/:id',
+          name: 'shows',
+          component: Shows,
         }
       ]
     },
