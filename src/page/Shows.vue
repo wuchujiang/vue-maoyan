@@ -11,48 +11,92 @@
         </div>
       </div>
     </section>
-      <div class="movie-banner nav-swiper">
-        <div class="swiper-bg" :style="{backgroundImage: `url(${movieItem.img.replace('w.h', '296.416')})`}"></div>
-        <div class="swiper-filter"></div>
-        <div class="swiper-container" @transitionend="transitionend">
-          <div :class="['slider-item',{active: index === sliderIndex}]" @click="clickImg(index)" v-for="(item, index) in detail.showData.movies" :key="item.id">
-            <div class="post">
-              <img :src="item.img | tranformImg('130.190')" alt="">
+    <section class="movie-banner nav-swiper">
+      <div class="swiper-bg" :style="{backgroundImage: `url(${movieItem.img.replace('w.h', '296.416')})`}"></div>
+      <div class="swiper-filter"></div>
+      <div class="swiper-container" @transitionend="transitionend">
+        <div :class="['slider-item',{active: index === sliderIndex}]" @click="clickImg(index)" v-for="(item, index) in detail.showData.movies" :key="item.id">
+          <div class="post">
+            <img :src="item.img | tranformImg('130.190')" alt="">
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- <div class="line"></div> -->
+    <section class="movie-info">
+      <div class="movie-nm">
+        <span class="title">{{movieItem.nm}}</span>
+        <span class="score">{{movieItem.sc | toFloat}}分</span>
+      </div>
+      <div class="movie-desc">{{movieItem.desc}}</div>
+    </section>
+    <section class="seat">
+      <div class="seat-tab">
+        <div class="tab-item" v-for="(item, index) in movieItem.shows" @click="seatTab = index" :key="index">{{item.dateShow}}</div>
+      </div>
+      <div class="seat-content">
+        <div class="seat-list">
+          <div class="seat-item flex" v-for="(item, index) in seatList" :key="index">
+            <div class="flex-1">
+              <div class="start">{{item.tm}}</div>
+              <div class="end">{{endTime(item.tm, movieItem.dur)}} 散场</div>
+            </div>
+            <div class="flex-2">
+              <div class="movie-type">{{item.lang}} {{item.tp}}</div>
+              <div class="hall">{{item.th}}</div>
+            </div>
+            <div class="flex-3">
+              <div class="price">
+                <span class="d">¥</span>
+                <span v-html="item.sellPr"></span>
+              </div>
+              <div class="vipPrice">
+                <span class="icon">{{item.vipPriceName}}</span>
+                <span class="vprice">{{item.vipPrice}}</span>
+              </div>
+            </div>
+            <div class="flex-4">
+              <div class="buy-btn">购票</div>
             </div>
           </div>
         </div>
       </div>
-      <!-- <div class="line"></div> -->
+    </section>
   </section>
 </template>
 <style lang="scss">
-body{
+@import "../style/base.scss";
+
+body {
   background: #fff;
 }
-.flex{
+.flex {
   display: flex;
   align-items: center;
   height: 148px;
   padding: 27px 0 27px 30px;
   box-sizing: border-box;
-  .flex-left{
-    flex: 1;
-    h4{
+  .flex-left {
+    width: calc(100% - 180px);
+    padding-right: 40px;
+    h4 {
       height: 48px;
       line-height: 48px;
       font-size: 32px;
+      @include ellipsis;
     }
-    .addr{
+    .addr {
       line-height: 36px;
       margin-top: 10px;
       color: #666;
+      @include ellipsis;
     }
   }
-  .flex-right{
+  .flex-right {
     width: 140px;
     height: 68px;
     border-left: 2px solid #ddd;
-    img{
+    img {
       margin: 0 auto;
       display: block;
       width: 40px;
@@ -60,12 +104,12 @@ body{
     }
   }
 }
-.nav-swiper{
+.nav-swiper {
   padding: 40px 0;
   position: relative;
   z-index: 1;
   overflow: hidden;
-  .swiper-bg{
+  .swiper-bg {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -76,17 +120,17 @@ body{
     filter: blur(30px);
     background-position-y: 40%;
   }
-  .swiper-filter{
+  .swiper-filter {
     position: absolute;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     background-color: #40454d;
-    opacity: .55;
+    opacity: 0.55;
   }
 }
-.swiper-container{
+.swiper-container {
   width: 500px;
   display: flex;
   width: 100%;
@@ -94,16 +138,16 @@ body{
   position: relative;
   z-index: 1;
   transition-property: transform;
-  .slider-item{
+  .slider-item {
     width: 130px;
     height: 190px;
     margin-right: 30px;
-    &.active{
-      .post{
+    &.active {
+      .post {
         transform: scale(1.15);
         border: 4px solid #fff;
         position: relative;
-        &:before{
+        &:before {
           content: "";
           position: absolute;
           bottom: -12px;
@@ -111,23 +155,23 @@ body{
           transform: translateX(-50%);
           width: 20px;
           height: 10px;
-          background: url('../img/arrow_down.png') no-repeat;
+          background: url("../img/arrow_down.png") no-repeat;
           background-size: contain;
         }
       }
     }
-    .post{
+    .post {
       width: 130px;
-      transition: transform .3s;
+      transition: transform 0.3s;
     }
-    img{
+    img {
       height: 190px;
       width: 100%;
       transform: scale(1);
     }
   }
 }
-.line{
+.line {
   position: fixed;
   left: 50%;
   top: 0;
@@ -135,15 +179,33 @@ body{
   width: 2px;
   background: red;
 }
+.movie-info {
+  padding: 30px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  .movie-nm {
+    font-size: 30px;
+    font-weight: bold;
+    color: #000;
+    .score {
+      color: $yellow;
+    }
+  }
+  .movie-desc {
+    color: #666;
+    margin-top: 10px;
+  }
+}
 </style>
 
 <script>
-import {mapMutations} from 'vuex';
+import { mapMutations } from "vuex";
+import { formatDate } from "@/utils";
 
 export default {
-  name: 'shows',
+  name: "shows",
   created() {
-    this.setState({footShow: false});
+    this.setState({ footShow: false });
   },
   mounted() {
     this.fetchCinemaDetail();
@@ -152,39 +214,70 @@ export default {
     return {
       detail: {},
       sliderIndex: 0,
-    }
+      seatTab: 0
+    };
   },
   methods: {
-   ...mapMutations(['setState']),
-   async fetchCinemaDetail() {
-    const detail = await this.$axios.get(`/ajax/cinemaDetail?cinemaId=${this.$route.params.id}&movieId=${this.$route.query.movieId}`)
-    this.detail = detail;
-   },
-   clickImg(index) {
-     this.sliderIndex = index;
-     if(!this.sliderItem) {
-       this.sliderItem = [...document.querySelectorAll('.slider-item')];
-       this.sliderContainer = document.querySelector('.swiper-container');
-       this.w = document.documentElement.clientWidth;
-       this.sliderWidth = this.sliderItem.clientWidth;
-       this.sliderWidth = this.sliderItem[0].clientWidth;
-     }
-    const left = this.sliderItem[index].offsetLeft + this.sliderWidth / 2;
-    console.log(left, this.sliderWidth);
-    const distance = -(left - this.w / 2);
-    this.sliderContainer.style.transform = `translate3d(${distance}px, 0,0)`;
-    this.sliderContainer.style.transitionDuration = `300ms`;
-   },
-   transitionend() {
-    this.sliderContainer.style.transitionDuration = `0ms`;  
-   }
+    ...mapMutations(["setState"]),
+    async fetchCinemaDetail() {
+      const detail = await this.$axios.get(
+        `/ajax/cinemaDetail?cinemaId=${this.$route.params.id}&movieId=${
+          this.$route.query.movieId
+        }`
+      );
+      this.detail = detail;
+
+      // 动态插入字体文件
+      const head = document.getElementsByTagName("head")[0];
+      const style = document.createElement("style");
+      style.type = "text/css";
+      const css = `
+        @font-face{
+          font-family: stonefont;
+          src: url(${detail.stone.fonts.woff}) format('woff');
+        }
+        .stonefont {font-family: "stonefont";}
+      `;
+      if (style.styleSheet) {
+        style.styleSheet.cssText = css;
+      } else {
+        style.appendChild(document.createTextNode(css));
+      }
+      head.appendChild(style);
+    },
+    clickImg(index) {
+      this.sliderIndex = index;
+      if (!this.sliderItem) {
+        this.sliderItem = [...document.querySelectorAll(".slider-item")];
+        this.sliderContainer = document.querySelector(".swiper-container");
+        this.w = document.documentElement.clientWidth;
+        this.sliderWidth = this.sliderItem.clientWidth;
+        this.sliderWidth = this.sliderItem[0].clientWidth;
+      }
+      const left = this.sliderItem[index].offsetLeft + this.sliderWidth / 2;
+      console.log(left, this.sliderWidth);
+      const distance = -(left - this.w / 2);
+      this.sliderContainer.style.transform = `translate3d(${distance}px, 0,0)`;
+      this.sliderContainer.style.transitionDuration = `300ms`;
+    },
+    transitionend() {
+      this.sliderContainer.style.transitionDuration = `0ms`;
+    },
+    endTime(start, end) {
+      const startTimestamp = new Date(`2018/1/1 ${start}`).getTime();
+      const endTimestamp = end * 60 * 1000;
+      return formatDate(new Date(startTimestamp + endTimestamp), "hh:mm");
+    }
   },
   computed: {
     movieItem() {
       return this.detail.showData.movies[this.sliderIndex];
+    },
+    seatList() {
+      console.log(this.movieItem, this.seatTab);
+      return this.movieItem.shows[this.seatTab].plist;
     }
   }
-
-}
+};
 </script>
 
