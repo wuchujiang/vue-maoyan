@@ -30,7 +30,7 @@
         </div>
 			</section>
 			<section class="list-city">
-				<div class="list-box" v-for="item, index in cityList" :key="index">
+				<div class="list-box" v-for="(item, index) in cityList" :key="index">
 					<h6 class="fixed-title" :data-id="item.key">{{item.key}}</h6>
 					<ul>
 						<li @click="selectCity(k)" v-for="k in item.value" :key="k.id" :data-id="k.id" :data-py="k.py">{{k.nm}}</li>

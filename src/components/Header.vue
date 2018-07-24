@@ -1,7 +1,7 @@
 <template>
   <div class="header-wrap">
     <header :class="{header: true, fixed: fixed}">
-      <div class="header-left"><a v-show="back" href="javascript:;">{{left}}</a></div>
+      <div class="header-left"><a v-show="back" href="javascript:;" @click="goBack">{{left}}</a></div>
       <div class="header-title"><slot></slot></div>
       <div class="header-right">{{right}}</div>
     </header>
@@ -16,6 +16,11 @@ export default {
   data() {
     return {};
   },
+  methods: {
+    goBack() {
+      this.$router.go(-1);
+    }
+  }
 };
 </script>
 
@@ -36,6 +41,11 @@ export default {
   font-size: 38px;
   color: #fff;
   padding: 0 30px;
+  .header-title{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   &.fixed {
     position: fixed;
     left: 0;
@@ -57,9 +67,9 @@ export default {
         content: "";
         display: block;
         position: absolute;
-        top: 0;
-        width: 32px;
-        height: 32px;
+        top: 8px;
+        width: 24px;
+        height: 24px;
         border-bottom: 2px solid #fff;
         border-left: 2px solid #fff;
         transform: rotate(45deg);

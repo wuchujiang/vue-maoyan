@@ -32,7 +32,7 @@
     </section>
     <section class="seat">
       <div class="seat-tab">
-        <div class="tab-item" v-for="(item, index) in movieItem.shows" @click="seatTab = index" :key="index">{{item.dateShow}}</div>
+        <div :class="['tab-item', {active: index === seatTab}]" v-for="(item, index) in movieItem.shows" @click="seatTab = index" :key="index">{{item.dateShow}}</div>
       </div>
       <div class="seat-content">
         <div class="seat-list">
@@ -56,7 +56,7 @@
               </div>
             </div>
             <div class="flex-4">
-              <div class="buy-btn">购票</div>
+              <div :class="`buy-btn ticketStatus-${item.ticketStatus}`">{{ticketStatusText(item.ticketStatus)}}</div>
             </div>
           </div>
         </div>
@@ -64,10 +64,10 @@
     </section>
   </section>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../style/base.scss";
 
-body {
+.shows {
   background: #fff;
 }
 .flex {
@@ -196,6 +196,85 @@ body {
     margin-top: 10px;
   }
 }
+.seat-tab{
+  display: flex;
+  margin: 0 30px;
+  .tab-item{
+    width: 33.3333333%;
+    height: 90px;
+    line-height: 90px;
+    border-bottom: 2px solid transparent;
+    text-align: center;
+    color: #666;
+    &.active{
+      color: $baseColor;
+      border-bottom-color: $baseColor;
+    }
+  }
+}
+.seat-list{
+  padding-left: 30px;
+}
+.seat-item{
+  display: flex;
+  align-items: center;
+  height: 156px;
+  padding: 35px 0;
+  border-bottom: 1px solid #ddd;
+  padding-right: 30px;
+  .flex-1{
+    .start{
+      height: 40px;
+      font-size: 36px;
+      line-height: 40px;
+    }
+    .end{
+      line-height: 24px;
+      margin-top: 20px;
+      font-size: 22px;
+      color: #999;
+    }
+  }
+  .flex-2{
+    margin-left: 34px;
+    flex: 1;
+    .movie-type{
+      line-height: 36px;
+      margin-top: 4px;
+    }
+    .hall{
+      line-height: 24px;
+      margin-top: 20px;
+      font-size: 22px;
+      color: #999;
+    }
+  }
+  .flex-3{
+    width: 200px;
+    color: $baseColor;
+    font-size: 36px;
+    .price{
+      .d{
+        font-size: .6em;
+      }
+    }
+  }
+  .flex-4{
+    width: 90px;
+    height: 54px;
+    line-height: 54px;
+    text-align: center;
+    color: #fff;
+    font-size: 24px;
+    .buy-btn{
+      border-radius: 8px;
+      background: $baseColor;
+    }
+    .ticketStatus-2{
+      background: #aaa;
+    }
+  }
+}
 </style>
 
 <script>
@@ -205,7 +284,7 @@ import { formatDate } from "@/utils";
 export default {
   name: "shows",
   created() {
-    this.setState({ footShow: false });
+    this.setState({ footShow: false, back: true });
   },
   mounted() {
     this.fetchCinemaDetail();
@@ -226,6 +305,10 @@ export default {
         }`
       );
       this.detail = detail;
+      this.setState({ headerTitle: detail.cinemaData.nm });
+      this.$nextTick(function() {
+        this.clickImg(0);
+      });
 
       // 动态插入字体文件
       const head = document.getElementsByTagName("head")[0];
@@ -267,6 +350,10 @@ export default {
       const startTimestamp = new Date(`2018/1/1 ${start}`).getTime();
       const endTimestamp = end * 60 * 1000;
       return formatDate(new Date(startTimestamp + endTimestamp), "hh:mm");
+    },
+    ticketStatusText(status) {
+      const text = ['购票', '售罄', '停售'];
+      return text[status]
     }
   },
   computed: {
@@ -274,8 +361,12 @@ export default {
       return this.detail.showData.movies[this.sliderIndex];
     },
     seatList() {
-      console.log(this.movieItem, this.seatTab);
       return this.movieItem.shows[this.seatTab].plist;
+    },
+  },
+  watch: {
+    sliderIndex() {
+      this.seatTab = 0;
     }
   }
 };

@@ -10,7 +10,8 @@ const state = {
   headerTitle: "猫眼电影",
   headerFixed: true,
   footShow: true,
-  input: ""
+  input: "",
+  back: false,
 };
 
 export default new Vuex.Store({

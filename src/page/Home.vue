@@ -1,6 +1,6 @@
 <template>
     <div>
-      <NavHeader :fixed="headerFixed">{{headerTitle}}</NavHeader>
+      <NavHeader :fixed="headerFixed" :back="back">{{headerTitle}}</NavHeader>
       <router-view></router-view>
       <fix-footer :show="footShow"></fix-footer>
     </div>
@@ -15,7 +15,7 @@ export default {
   name: "home",
   components: { NavHeader, fixFooter },
   computed:{
-    ...mapState(['headerTitle', 'headerFixed', 'footShow'])
+    ...mapState(['headerTitle', 'headerFixed', 'footShow', 'back'])
   }
 };
 </script>
