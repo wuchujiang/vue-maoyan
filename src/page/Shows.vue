@@ -63,6 +63,7 @@
       </div>
     </section>
   </section>
+    <loader v-else></loader>
 </template>
 <style lang="scss" scoped>
 @import "../style/base.scss";
@@ -280,11 +281,14 @@
 <script>
 import { mapMutations } from "vuex";
 import { formatDate } from "@/utils";
-
+import loader from "@/components/loader";
 export default {
   name: "shows",
   created() {
     this.setState({ footShow: false, back: true });
+  },
+  components: {
+    loader
   },
   mounted() {
     this.fetchCinemaDetail();
