@@ -1,5 +1,8 @@
 @import './loading.scss';
-
+body, html{
+  height: 100%;
+  width: 100%;
+}
 body {
   font-size: 28px;
   background: #ebebeb;
@@ -13,4 +16,8 @@ a {
 }
 li {
   list-style: none;
+}
+.fixed{
+  height: 100%;
+  position: fixed;
 }

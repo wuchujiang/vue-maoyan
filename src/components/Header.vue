@@ -51,7 +51,7 @@ export default {
     left: 0;
     top: 0;
     right: 0;
-    z-index: 100;
+    z-index: 1000;
   }
   .header-left,
   .header-right {
@@ -70,8 +70,8 @@ export default {
         top: 8px;
         width: 24px;
         height: 24px;
-        border-bottom: 2px solid #fff;
-        border-left: 2px solid #fff;
+        border-bottom: 4px solid #fff;
+        border-left: 4px solid #fff;
         transform: rotate(45deg);
       }
     }

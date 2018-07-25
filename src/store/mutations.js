@@ -6,4 +6,8 @@ export default {
       state[k] = newState[k];
     }
   },
+  setFilterParams(state, obj) {
+    const filterCinema = state.filterCinema;
+    state.filterCinema = Object.assign(filterCinema, obj);
+  }
 }

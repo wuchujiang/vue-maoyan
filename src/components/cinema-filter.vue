@@ -16,15 +16,15 @@
               <div class="region-sidenav">
                 <ul v-show="regionTab === 1">
                   <li 
-                  :class="{'side-nax': true, active: districtId === item.id }" 
-                  @click="districtId = item.id" 
+                  :class="{'side-nax': true, active: getFilterCinemas.districtId === item.id }" 
+                  @click="setFilterParams({districtId: item.id})" 
                   v-for="item in district" 
                   :key="item.id">{{`${item.name}(${item.count})`}}</li>
                 </ul>
                 <ul v-show="regionTab === 2">
                   <li
-                  :class="{'side-nax': true, active: lineId === item.id }" 
-                  @click="lineId = item.id" 
+                  :class="{'side-nax': true, active: getFilterCinemas.lineId === item.id }" 
+                  @click="setFilterParams({lineId: item.id})" 
                   v-for="item in subway" 
                   :key="item.id">
                     {{`${item.name}(${item.count})`}}
@@ -46,7 +46,7 @@
         </section>
         <section v-show="brandIndex === 2" class="filter-box filter-box-second">
           <ul>
-            <li @click="selectArea(2, item.id)" :class="{active: brandId === item.id}" v-for="item in brand" :key="item.id">
+            <li @click="selectArea(2, item.id)" :class="{active: getFilterCinemas.brandId === item.id}" v-for="item in brand" :key="item.id">
               <p class="name">{{item.name}}</p>
               <span class="counter">{{item.count}}</span>
             </li>
@@ -60,7 +60,7 @@
                 <div 
                 @click="serviceId = item.id" 
                 v-for="item in service" 
-                :class="{'select-item': true, active: serviceId === item.id}"
+                :class="{'select-item': true, active: getFilterCinemas.serviceId === item.id}"
                 :key="item.id"
                 >{{item.name}}</div>
               </section>
@@ -69,26 +69,28 @@
               <h4>特色功能</h4>
               <section class="select-box">
                 <div 
-                @click="hallTypeId = item.id" 
+                @click="setFilterParams({hallTypeId: item.id})"
                 v-for="item in hallType" 
-                :class="{'select-item': true, active: hallTypeId === item.id}"
+                :class="{'select-item': true, active: getFilterCinemas.hallTypeId === item.id}"
                 :key="item.id"
                 >{{item.name}}</div>
               </section>
             </section>
             <div class="service-control">
-              <div class="control-reset" @click="serviceId = -1;hallTypeId=-1">重置</div>
-              <div class="control-reset confirm" @click="brandIndex=0;searchCinemmas()">确定</div>
+              <div class="control-reset" @click="setFilterParams({serviceId: -1,hallTypeId: -1})">重置</div>
+              <div class="control-reset confirm" @click="brandIndex=0;fetchCinemasList()">确定</div>
             </div>
           </section>
         </section>
-        <section v-show="brandIndex > 0" class="filter-mask"></section>
       </section>
       </section>
+    <section v-show="brandIndex > 0" class="filter-mask"></section>
   </section>
 </template>
 
 <script>
+import {mapGetters, mapMutations, mapActions} from 'vuex';
+
 export default {
   name: 'cinema-filter',
   props: ['region', 'day', 'cinemaList'],
@@ -100,13 +102,6 @@ export default {
     return {
       brandIndex: 0,
       regionTab: 1,
-      brandId: -1,
-      serviceId: -1,
-      hallTypeId: -1,
-      stationId: -1,
-      areaId: -1,
-      lineId: -1,
-      districtId: -1,
       filterTabOneHeight: '',
       areaText: '全城',
       serviceText: '特色',
@@ -134,14 +129,15 @@ export default {
       return this.region.subway.subItems;
     },
     regionIndex() {
-      return this.regionTab === 1 ? this.districtId : this.lineId;
+      const {districtId, lineId} = this.getFilterCinemas;
+      return this.regionTab === 1 ? districtId : lineId;
     },
     regionList() {
       const subItems =  this.regionTab === 1 ? this.district : this.subway;
       const filterItem = subItems.filter(i => i.id === this.regionIndex)[0];
       return filterItem.subItems ? filterItem.subItems : [];
     },
-    
+    ...mapGetters(['getFilterCinemas']),
   },
   methods: {
     toggleTab(num) {
@@ -150,37 +146,22 @@ export default {
     selectArea(type,id) {
       if(type === 1) {
         if(this.regionTab === 1) {
-          this.areaId = id;
+          this.setFilterParams({areaId: id});
         }else{
-          this.stationId = id;
+          this.setFilterParams({stationId: id});
         }
         this.setAreaText();
       } else {
-        this.brandId = id;
+        this.setFilterParams({brandId: id});
         this.setBrandText();
       }
       
       this.brandIndex = 0;
-      this.searchCinemmas();
+      this.fetchCinemasList();
     },
     brandActive(id) {
-      return (this.areaId === id && this.regionTab === 1) || (this.stationId === id && this.regionTab === 2)
-    },
-    async searchCinemmas() {
-      const params = {
-        brandId: this.brandId,
-        serviceId: this.serviceId,
-        hallTypeId: this.hallTypeId,
-        stationId: this.stationId,
-        districtId: this.districtId,
-        lineId: this.lineId,
-        areaId: this.areaId,
-        cityId: this.cityId,
-        movieId: this.$route.params.id,
-        day: this.day,
-      };
-      const filterMovie = await this.$axios.post(`/ajax/movie?forceUpdate=${new Date().getTime()}`, params);
-      this.$emit('click', filterMovie.cinemas);
+      const {areaId,stationId} = this.getFilterCinemas;
+      return (areaId === id && this.regionTab === 1) || (stationId === id && this.regionTab === 2)
     },
      // 获取高度
     getFilterHeight() {
@@ -192,17 +173,19 @@ export default {
       this.filterTabOneHeight = filterBoxHeight + 'px';
     },
     setAreaText() {
+      const {districtId, areaId} = this.getFilterCinemas;
       if(this.regionTab === 1) {
-        const filters = this.district.filter(i => i.id === this.districtId)[0];
-        if(filters.subItems && this.areaId !== -1) {
-          const filterSub = filters.subItems.filter(i => i.id === this.areaId)[0];
+        const filters = this.district.filter(i => i.id === districtId)[0];
+        if(filters.subItems && areaId !== -1) {
+          const filterSub = filters.subItems.filter(i => i.id === areaId)[0];
           this.areaText = filterSub.name;
         }else{
           this.areaText = filters.name;
         }
       }else{
-        const filters = this.subway.filter(i => i.id === this.lineId)[0];
-        if(filters.subItems && this.stationId !== -1) {
+        const {lineId, stationId} = this.getFilterCinemas;
+        const filters = this.subway.filter(i => i.id === lineId)[0];
+        if(filters.subItems && stationId !== -1) {
           const filterSub = filters.subItems.filter(i => i.id === this.stationId)[0];
           this.areaText = filterSub.name;
         }else{
@@ -211,12 +194,15 @@ export default {
       }
     },
     setBrandText() {
-      if(this.brandId === -1) {
+      const {brandId} = this.getFilterCinemas;
+      if(brandId === -1) {
         return '品牌';
       }
-      const filterArr = this.brand.filter(i => i.id === this.brandId)[0];
+      const filterArr = this.brand.filter(i => i.id === brandId)[0];
       this.brandText = filterArr.name;
     },
+    ...mapMutations(['setFilterParams']),
+    ...mapActions(['fetchCinemasList'])
   },
   watch: {
     brandIndex(index) {
@@ -224,6 +210,11 @@ export default {
         this.movieInfo = document.querySelector('.movie-intro');
       }
       this.movieInfo.style.display = index === 0 ? 'block' : 'none';
+      if(index === 0 && document.body) {
+        document.body.classList.remove('fixed');
+      }else{
+        document.body.classList.add('fixed');
+      }
     },
   }
 }
@@ -231,6 +222,11 @@ export default {
 
 <style lang="scss">
 @import '../style/base.scss';
+.filter-column{
+  position: relative;
+  z-index: 100;
+  background: #fff;
+}
 .cinema-filter{
   background: #fff;
   .filter-tab{
@@ -430,6 +426,14 @@ export default {
         }
     }
   }
+}
+.filter-mask{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
 }
 </style>
 

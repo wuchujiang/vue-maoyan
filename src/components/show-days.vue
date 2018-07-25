@@ -17,10 +17,11 @@ export default {
     prop: 'date',
     event: 'change'
   },
-  props: ['data', 'date'],
+  props: ['data', 'date', 'onChange'],
   methods: {
     changeDay(day) {
       this.$emit('change', day);
+      this.$emit('onChange', day);
     }
   }
 }
@@ -30,6 +31,8 @@ export default {
 @import '@/style/base.scss';
 
 .show-days{
+  position: relative;
+  z-index: 100;
   .show-box{
     white-space: nowrap;
     overflow: auto;

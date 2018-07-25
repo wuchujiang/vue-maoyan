@@ -46,14 +46,15 @@
               <div class="hall">{{item.th}}</div>
             </div>
             <div class="flex-3">
-              <div class="price">
-                <span class="d">¥</span>
-                <span v-html="item.sellPr"></span>
+              <div class="price-info">
+                <div class="price">
+                  <span class="d">¥</span><span v-html="item.sellPr"></span>
+                </div>
+                <div class="vipPrice">
+                  <span v-if="item.vipPriceName" class="icon">{{item.vipPriceName}}</span><span v-if="item.vipPrice" class="vprice">¥{{item.vipPrice}}</span>
+                </div>
               </div>
-              <div class="vipPrice">
-                <span class="icon">{{item.vipPriceName}}</span>
-                <span class="vprice">{{item.vipPrice}}</span>
-              </div>
+              <div class="extraDesc">{{item.extraDesc}}</div>
             </div>
             <div class="flex-4">
               <div :class="`buy-btn ticketStatus-${item.ticketStatus}`">{{ticketStatusText(item.ticketStatus)}}</div>
@@ -251,12 +252,40 @@
     }
   }
   .flex-3{
-    width: 200px;
-    color: $baseColor;
-    font-size: 36px;
+    .price-info{
+      width: 260px;
+      color: $baseColor;
+      font-size: 40px;
+      display: flex;
+    }
+    .extraDesc{
+      line-height: 24px;
+      margin-top: 14px;
+      font-size: 22px;
+      height: 24px;
+      color: #999;
+    }
     .price{
       .d{
         font-size: .6em;
+      }
+    }
+    .vipPrice{
+      font-size: 0;
+      margin-left: 8px;
+      margin-top: 10px;
+      span{
+        line-height: 24px;
+        font-size: 20px;
+        padding: 0 4px;
+      }
+      .vprice{
+        color: #f90;
+        border: 1px solid #f90;
+      }
+      .icon{
+        background: #f90;
+        color: #fff;
       }
     }
   }

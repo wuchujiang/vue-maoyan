@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-
+import {formatDate} from '@/utils';
 import mutations from "./mutations";
 import actions from "./actions";
 import getters from "./getters";
@@ -12,6 +12,18 @@ const state = {
   footShow: true,
   input: "",
   back: false,
+  city: 30,
+  filterCinema: {
+    brandId: -1,
+    serviceId: -1,
+    hallTypeId: -1,
+    stationId: -1,
+    areaId: -1,
+    lineId: -1,
+    districtId: -1,
+    day: formatDate(new Date()),
+  },
+  filterCinemasList: [],
 };
 
 export default new Vuex.Store({

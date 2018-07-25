@@ -1,8 +1,9 @@
 <template>
   <section class="cinema-movie">
-    <movie-introduction :data="movieDetail"></movie-introduction>
-    <show-days v-model="showDay" :data="showDays"></show-days>
-    <cinema-filter :region="brandDetail" v-model="cinemaList"></cinema-filter>
+    <movie-introduction v-if="Object.keys(movieDetail).length > 0" :data="movieDetail"></movie-introduction>
+    <show-days v-if="showDays.length" v-model="showDay" :data="showDays"></show-days>
+    <loader v-else></loader>
+    <cinema-filter v-if="showDays.length" :region="brandDetail" :day="showDay"></cinema-filter>
     <section class="cinema-movie-box">
       <router-link v-for="item in cinemaList" :key="item.id" :to="{name: 'shows', params: {id: item.id}, query: {movieId: $route.params.id}}">
         <cinema-item :data="item" ></cinema-item>
@@ -13,11 +14,13 @@
 
 <script>
 import MovieIntroduction from '@/components/movie-introduction';
-import {mapMutations} from 'vuex';
+import {mapMutations, mapState, mapGetters, mapActions} from 'vuex';
 import {formatDate, getWeek} from '@/utils';
 import ShowDays from '@/components/show-days';
 import CinemaFilter from '@/components/cinema-filter';
 import CinemaItem from '@/components/cinema-item';
+import loader from '@/components/loader';
+
 export default {
   name: 'cinema-movie',
   data() {
@@ -26,7 +29,6 @@ export default {
       showDays: [],
       showDay: formatDate(new Date(), 'yyyy-MM-dd'),
       brandDetail: {},
-      cinemaList: [],
     }
   },
   created() {
@@ -36,7 +38,7 @@ export default {
   },
 
   components: {
-    MovieIntroduction,ShowDays,CinemaFilter,CinemaItem
+    MovieIntroduction,ShowDays,CinemaFilter,CinemaItem, loader
   },
   methods: {
     async fetchMovieInfomation() {
@@ -47,26 +49,11 @@ export default {
       this.brandDetail = brandDetail;
       this.setState({headerTitle: movieDetail.detailMovie.nm, footShow: false});
     },
-    async fetchCinemaMovie() {
-      const params = {
-        movieId: 1200486,
-        day: formatDate(new Date()),
-        offset: 0,
-        limit: 20,
-        districtId: -1,
-        lineId: -1,
-        hallType: -1,
-        brandId: -1,
-        serviceId: -1,
-        areaId: -1,
-        stationId: -1,
-        updateShowDay: true,
-        cityId: 30,
-      }
-      const movieDetail = await this.$axios.post(`/ajax/movie?forceUpdate=${new Date().getTime()}`, params);
-      this.showDays = this.transDays(movieDetail.showDays.dates);
-      this.cinemaList = movieDetail.cinemas;
-
+    fetchCinemaMovie() {
+      this.fetchCinemasList().then((res) => {
+        console.log(res);
+        this.showDays = this.transDays(res.showDays.dates);
+      });
     },
     ...mapMutations(['setState']),
     // 转换days
@@ -99,6 +86,13 @@ export default {
       });
       return newDays;
     },
+    ...mapActions(['fetchCinemasList'])
+  },
+  computed: {
+    ...mapState({
+      cinemaList:'filterCinemasList',
+    }),
+    ...mapGetters(['getCinemasList'])
   },
   watch: {
   }
